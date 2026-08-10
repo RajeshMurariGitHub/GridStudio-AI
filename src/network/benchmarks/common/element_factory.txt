@@ -1,0 +1,205 @@
+"""
+GridStudio AI
+
+Module:
+    element_factory.py
+
+Description:
+    Converts immutable benchmark datasets into GridStudio
+    domain model objects.
+
+    The element factory translates benchmark data into
+    Bus, Line, Load, Generator and other domain elements.
+
+    This module performs object construction only.
+
+Author:
+    Rajesh Murari
+
+License:
+    MIT
+"""
+
+from __future__ import annotations
+
+from abc import ABC
+from abc import abstractmethod
+from uuid import UUID
+
+from .types import (
+    BenchmarkDataset,
+)
+
+
+class BaseElementFactory(ABC):
+    """
+    Base class for benchmark element factories.
+
+    A factory converts an immutable BenchmarkDataset into
+    GridStudio domain model objects.
+    """
+
+    def __init__(
+        self,
+        dataset: BenchmarkDataset,
+    ) -> None:
+
+        self._dataset = dataset
+
+        #
+        # Mapping:
+        #
+        # IEEE bus number
+        #          ↓
+        # Domain UUID
+        #
+
+        self._bus_lookup: dict[
+            int,
+            UUID,
+        ] = {}
+
+    #
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+    #
+
+    @property
+    def dataset(
+        self,
+    ) -> BenchmarkDataset:
+        """
+        Return the benchmark dataset.
+        """
+
+        return self._dataset
+
+    @property
+    def bus_lookup(
+        self,
+    ) -> dict[int, UUID]:
+        """
+        Mapping from benchmark bus number to domain UUID.
+        """
+
+        return self._bus_lookup
+
+    #
+    # ------------------------------------------------------------------
+    # Factory interface
+    # ------------------------------------------------------------------
+    #
+
+    @abstractmethod
+    def create_buses(
+        self,
+    ) -> list[object]:
+        """
+        Create Bus objects.
+        """
+
+    @abstractmethod
+    def create_branches(
+        self,
+    ) -> list[object]:
+        """
+        Create Line objects.
+        """
+
+    @abstractmethod
+    def create_transformers(
+        self,
+    ) -> list[object]:
+        """
+        Create Transformer objects.
+        """
+
+    @abstractmethod
+    def create_loads(
+        self,
+    ) -> list[object]:
+        """
+        Create Load objects.
+        """
+
+    @abstractmethod
+    def create_generators(
+        self,
+    ) -> list[object]:
+        """
+        Create Generator objects.
+        """
+
+    @abstractmethod
+    def create_shunts(
+        self,
+    ) -> list[object]:
+        """
+        Create Shunt objects.
+        """
+
+    @abstractmethod
+    def create_batteries(
+        self,
+    ) -> list[object]:
+        """
+        Create Battery objects.
+        """
+
+    @abstractmethod
+    def create_ev_chargers(
+        self,
+    ) -> list[object]:
+        """
+        Create EV charger objects.
+        """
+
+    #
+    # ------------------------------------------------------------------
+    # Convenience
+    # ------------------------------------------------------------------
+    #
+
+    def create_all(
+        self,
+    ) -> list[object]:
+        """
+        Create every supported benchmark element.
+        """
+
+        elements: list[object] = []
+
+        elements.extend(
+            self.create_buses()
+        )
+
+        elements.extend(
+            self.create_branches()
+        )
+
+        elements.extend(
+            self.create_transformers()
+        )
+
+        elements.extend(
+            self.create_loads()
+        )
+
+        elements.extend(
+            self.create_generators()
+        )
+
+        elements.extend(
+            self.create_shunts()
+        )
+
+        elements.extend(
+            self.create_batteries()
+        )
+
+        elements.extend(
+            self.create_ev_chargers()
+        )
+
+        return elements

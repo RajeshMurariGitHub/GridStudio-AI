@@ -42,40 +42,7 @@ from src.domain.network.network import Network
 from src.simulation.models.requests.reference_source import (
     ReferenceSource,
 )
-
-# ============================================================================
-# Optional pandapower Import
-# ============================================================================
-
-
-def _import_pandapower() -> Any:
-    """
-    Import pandapower lazily.
-
-    Keeping the import local prevents importing the GridStudio
-    simulation package from requiring pandapower unless the
-    pandapower adapter is actually used.
-
-    Returns
-    -------
-    module
-        Imported pandapower module.
-
-    Raises
-    ------
-    ImportError
-        If pandapower is not installed.
-    """
-
-    try:
-        import pandapower as pp
-    except ImportError as exc:
-        raise ImportError(
-            "The pandapower simulation engine requires the "
-            "'pandapower' package to be installed."
-        ) from exc
-
-    return pp
+from .dependencies import import_pandapower
 
 
 # ============================================================================
@@ -215,7 +182,7 @@ class PandapowerConverter:
             Native pandapower network and UUID/index mappings.
         """
 
-        pp = _import_pandapower()
+        pp = import_pandapower()
 
         pp_network = pp.create_empty_network(
             name=network.name,

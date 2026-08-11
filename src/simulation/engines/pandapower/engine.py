@@ -38,7 +38,7 @@ from time import perf_counter
 from uuid import UUID
 from uuid import uuid4
 
-import pandapower as pp
+from .dependencies import import_pandapower
 
 from src.core.enums.simulation import (
     SimulationMode,
@@ -215,7 +215,7 @@ class PandapowerEngine(
         """
         Execute the pandapower power-flow solver.
         """
-
+        pp = import_pandapower()
         pp.runpp(
             pp_net,
         )
@@ -382,7 +382,9 @@ class PandapowerEngine(
 
             solver_name=self.name,
 
-            solver_version=pp.__version__,
+            solver_version=(
+                import_pandapower().__version__
+            ),
 
             notes="",
 

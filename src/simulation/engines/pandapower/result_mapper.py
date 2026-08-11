@@ -1311,7 +1311,9 @@ class PandapowerResultMapper:
         self,
     ) -> dict[str, float]:
         """
-        Compute aggregate branch loss statistics.
+        Compute aggregate network losses.
+
+        Includes losses from lines and transformers.
         """
 
         active_loss = 0.0
@@ -1321,13 +1323,27 @@ class PandapowerResultMapper:
 
             table = self._table("res_line")
 
-            active_loss = self._float(
-                table.pl_mw.sum(),
-            )
+            if not table.empty:
+                active_loss += self._float(
+                    table.pl_mw.sum(),
+                )
 
-            reactive_loss = self._float(
-                table.ql_mvar.sum(),
-            )
+                reactive_loss += self._float(
+                    table.ql_mvar.sum(),
+                )
+
+        if self._has_table("res_trafo"):
+
+            table = self._table("res_trafo")
+
+            if not table.empty:
+                active_loss += self._float(
+                    table.pl_mw.sum(),
+                )
+
+                reactive_loss += self._float(
+                    table.ql_mvar.sum(),
+                )
 
         return {
             "total_active_loss_mw": active_loss,

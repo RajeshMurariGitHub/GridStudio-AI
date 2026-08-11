@@ -94,6 +94,13 @@ class TestPandapowerPowerFlowPipeline:
 
         assert result.solver_version
 
+        assert (
+            result.base_frequency_hz
+            == pytest.approx(
+                network.base_frequency_hz,
+            )
+        )
+
     def test_repeatability(
         self,
         engine,

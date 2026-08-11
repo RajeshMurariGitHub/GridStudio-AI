@@ -416,7 +416,7 @@ class PandapowerEngine(
             #
             base_power_mva=None,
 
-            base_frequency_hz=50.0,
+            base_frequency_hz=request.network.base_frequency_hz,
 
             #
             # ----------------------------------------------------------

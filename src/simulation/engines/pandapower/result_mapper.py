@@ -1205,7 +1205,7 @@ class PandapowerResultMapper:
         Build convergence information for the completed power flow.
         """
         return ConvergenceInfo(
-            converged=True,
+            converged=bool(self._pp_net.converged),
             iterations=0,
             tolerance=None,
             message=None,

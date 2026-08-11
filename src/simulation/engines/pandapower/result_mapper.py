@@ -803,76 +803,27 @@ class PandapowerResultMapper:
         # Voltage-controlled generators
         #
 
-        self._map_generator_table(
+        self._map_der_table(
             table_name="res_gen",
             mapping_table="gen",
+            asset_type="generator",
             target=generator_states,
+            state_factory=self._create_generator_state,
         )
 
         #
         # Static generators
         #
 
-        self._map_generator_table(
+        self._map_der_table(
             table_name="res_sgen",
             mapping_table="sgen",
+            asset_type="generator",
             target=generator_states,
+            state_factory=self._create_generator_state,
         )
 
         return generator_states
-
-    def _map_generator_table(
-        self,
-        *,
-        table_name: str,
-        mapping_table: str,
-        target: dict[UUID, GeneratorState,],
-    ) -> None:
-        """
-        Map one pandapower generator table.
-
-        Parameters
-        ----------
-        table_name
-            Result table (res_gen or res_sgen).
-
-        mapping_table
-            Converter mapping table (gen or sgen).
-
-        target
-            Generator-state dictionary to populate.
-        """
-
-        if not self._has_table(
-            table_name,
-        ):
-            return
-
-        table = self._table(
-            table_name,
-        )
-
-        if table.empty:
-            return
-
-        for index, row in table.iterrows():
-
-            asset_id = self._asset_id(
-                mapping_table,
-                index,
-            )
-
-            asset_type = self._asset_type(
-                asset_id,
-            )
-
-            if asset_type != "generator":
-                continue
-
-            target[asset_id] = self._create_generator_state(
-                asset_id,
-                row,
-            )
 
     def _map_der_table(
         self,

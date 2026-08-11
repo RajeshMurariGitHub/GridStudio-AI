@@ -1410,19 +1410,31 @@ class PandapowerResultMapper:
 
     def _compute_power_factor(
         self,
-        statistics: dict[str, float],
     ) -> dict[str, float]:
         """
-        Compute overall system power factor.
+        Compute system power factor at the
+        reference/slack source boundary.
+
+        Pandapower reports external-grid power exchange
+        in ``res_ext_grid``. The power factor is reported
+        as a magnitude, so its value is in the range 0.0 to 1.0.
         """
 
-        active_power = statistics[
-            "total_active_generation_mw"
-        ]
+        active_power = 0.0
+        reactive_power = 0.0
 
-        reactive_power = statistics[
-            "total_reactive_generation_mvar"
-        ]
+        if self._has_table("res_ext_grid"):
+
+            table = self._table("res_ext_grid")
+
+            if not table.empty:
+                active_power = self._float(
+                    table.p_mw.sum(),
+                )
+
+                reactive_power = self._float(
+                    table.q_mvar.sum(),
+                )
 
         apparent_power = math.sqrt(
             active_power * active_power
@@ -1436,7 +1448,7 @@ class PandapowerResultMapper:
         else:
 
             power_factor = (
-                active_power
+                abs(active_power)
                 / apparent_power
             )
 
@@ -1477,9 +1489,7 @@ class PandapowerResultMapper:
         )
 
         statistics.update(
-            self._compute_power_factor(
-                statistics,
-            ),
+            self._compute_power_factor(),
         )
 
         return statistics

@@ -190,7 +190,12 @@ class PowerFlowResult(BaseSimulationResult):
 
     total_reactive_loss_mvar: float
 
-    system_power_factor: float
+    system_power_factor: float = Field(
+        description=(
+            "Magnitude of the net power factor at the "
+            "reference/slack source boundary."
+        ),
+    )
 
     minimum_bus_voltage_pu: float
 

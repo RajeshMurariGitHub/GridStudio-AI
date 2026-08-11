@@ -17,6 +17,7 @@ from src.simulation.engines.pandapower.mapping_results import (
     PandapowerMappingResult,
 )
 from src.simulation.engines.pandapower.result_mapper import (
+    PandapowerConversion,
     PandapowerResultMapper,
 )
 
@@ -56,20 +57,6 @@ def mapped_network():
         )
     )
 
-
-    print("\n=== ext_grid ===")
-    print(conversion.network.ext_grid)
-
-    print("\n=== gen ===")
-    print(conversion.network.gen)
-
-    print("\n=== sgen ===")
-    print(conversion.network.sgen)
-
-    print("\n=== bus ===")
-    print(conversion.network.bus)
-
-
     pp.runpp(
         conversion.network,
     )
@@ -85,6 +72,7 @@ def mapped_network():
 
     return (
         network,
+        conversion,
         result,
     )
 
@@ -107,7 +95,7 @@ class TestPandapowerResultMapper:
         BusState objects.
         """
 
-        network, result = mapped_network
+        network, conversion, result = mapped_network
 
         assert len(result.bus_states) == len(
             network.buses
@@ -123,14 +111,14 @@ class TestPandapowerResultMapper:
 
     def test_map_branch_results(
         self,
-        mapped_network: tuple[Network, PandapowerMappingResult],
+        mapped_network: tuple[Network, PandapowerConversion, PandapowerMappingResult],
     ) -> None:
         """
         Branch results should be mapped into
         BranchState objects.
         """
 
-        network, result = mapped_network
+        network, conversion, result = mapped_network
 
         assert len(result.branch_states) == len(
             network.lines
@@ -148,14 +136,14 @@ class TestPandapowerResultMapper:
 
     def test_map_transformer_results(
         self,
-        mapped_network: tuple[Network, PandapowerMappingResult],
+        mapped_network: tuple[Network, PandapowerConversion, PandapowerMappingResult],
     ) -> None:
         """
         Transformer results should be mapped
         into TransformerState objects.
         """
 
-        network, result = mapped_network
+        network, conversion, result = mapped_network
 
         assert len(
             result.transformer_states
@@ -177,14 +165,14 @@ class TestPandapowerResultMapper:
 
     def test_map_load_results(
         self,
-        mapped_network: tuple[Network, PandapowerMappingResult],
+        mapped_network: tuple[Network, PandapowerConversion, PandapowerMappingResult],
     ) -> None:
         """
         Load results should be mapped into
         LoadState objects.
         """
 
-        network, result = mapped_network
+        network, conversion, result = mapped_network
 
         assert len(result.load_states) == len(
             network.loads
@@ -201,14 +189,14 @@ class TestPandapowerResultMapper:
 
     def test_map_generator_results(
         self,
-        mapped_network: tuple[Network, PandapowerMappingResult],
+        mapped_network: tuple[Network, PandapowerConversion, PandapowerMappingResult],
     ) -> None:
         """
         Generator results should be mapped into
         GeneratorState objects.
         """
 
-        network, result = mapped_network
+        network, conversion, result = mapped_network
 
         mapped_generator_assets = (
             len(result.generator_states)
@@ -234,14 +222,14 @@ class TestPandapowerResultMapper:
 
     def test_map_storage_results(
         self,
-        mapped_network: tuple[Network, PandapowerMappingResult],
+        mapped_network: tuple[Network, PandapowerConversion, PandapowerMappingResult],
     ) -> None:
         """
         Storage assets should be mapped into
         BatteryState and EVState objects.
         """
 
-        network, result = mapped_network
+        network, conversion, result = mapped_network
 
         assert len(
             result.battery_states
@@ -289,14 +277,14 @@ class TestPandapowerResultMapper:
 
     def test_map_shunt_results(
         self,
-        mapped_network: tuple[Network, PandapowerMappingResult],
+        mapped_network: tuple[Network, PandapowerConversion, PandapowerMappingResult],
     ) -> None:
         """
         Shunt results should be mapped into
         ShuntState objects.
         """
 
-        network, result = mapped_network
+        network, conversion, result = mapped_network
 
         assert len(
             result.shunt_states
@@ -312,14 +300,14 @@ class TestPandapowerResultMapper:
 
     def test_statistics_are_computed(
         self,
-        mapped_network: tuple[Network, PandapowerMappingResult],
+        mapped_network: tuple[Network, PandapowerConversion, PandapowerMappingResult],
     ) -> None:
         """
         Aggregate statistics should be
         available in the mapping result.
         """
 
-        network, result = mapped_network
+        network, conversion, result = mapped_network
 
         statistics = result.statistics
 
@@ -353,16 +341,39 @@ class TestPandapowerResultMapper:
             statistics.keys()
         )
 
+        ext_grid = conversion.network.res_ext_grid
+
+        active_power = ext_grid.p_mw.sum()
+        reactive_power = ext_grid.q_mvar.sum()
+
+        apparent_power = (
+            active_power ** 2
+            + reactive_power ** 2
+        ) ** 0.5
+
+        expected_power_factor = (
+            abs(active_power) / apparent_power
+            if apparent_power > 0
+            else 1.0
+        )
+
+        assert statistics[
+            "system_power_factor"
+        ] == pytest.approx(
+            expected_power_factor,
+        )
+
+
     def test_convergence_is_mapped(
         self,
-        mapped_network: tuple[Network, PandapowerMappingResult],
+        mapped_network: tuple[Network, PandapowerConversion, PandapowerMappingResult,],
     ) -> None:
         """
         Convergence information should be
         populated.
         """
 
-        network, result = mapped_network
+        network, conversion, result = mapped_network
 
         convergence = result.convergence
 
@@ -382,14 +393,14 @@ class TestPandapowerResultMapper:
 
     def test_map_returns_mapping_result(
         self,
-        mapped_network: tuple[Network, PandapowerMappingResult],
+        mapped_network: tuple[Network, PandapowerConversion, PandapowerMappingResult],
     ) -> None:
         """
         The public map() API should return a
         PandapowerMappingResult instance.
         """
 
-        network, result = mapped_network
+        network, conversion, result = mapped_network
 
         assert isinstance(
             result,
@@ -402,7 +413,7 @@ class TestPandapowerResultMapper:
 
     def test_map_complete_network(
         self,
-        mapped_network: tuple[Network, PandapowerMappingResult],
+        mapped_network: tuple[Network, PandapowerConversion, PandapowerMappingResult],
     ) -> None:
         """
         Mapping a solved network should produce
@@ -410,7 +421,7 @@ class TestPandapowerResultMapper:
         mapping result.
         """
 
-        network, result = mapped_network
+        network, conversion, result = mapped_network
 
         #
         # Every converted asset should have
@@ -484,14 +495,14 @@ class TestPandapowerResultMapper:
 
     def test_all_state_keys_are_valid_uuids(
         self,
-        mapped_network: tuple[Network, PandapowerMappingResult],
+        mapped_network: tuple[Network, PandapowerConversion, PandapowerMappingResult],
     ) -> None:
         """
         Every mapped state dictionary should
         use GridStudio UUIDs as keys.
         """
 
-        network, result = mapped_network
+        network, conversion, result = mapped_network
 
         state_collections = (
 
@@ -528,7 +539,7 @@ class TestPandapowerResultMapper:
 
     def test_every_mapping_is_consumed(
         self,
-        mapped_network: tuple[Network, PandapowerMappingResult],
+        mapped_network: tuple[Network, PandapowerConversion, PandapowerMappingResult],
     ) -> None:
         """
         Every element registered during
@@ -536,7 +547,7 @@ class TestPandapowerResultMapper:
         in the mapped result.
         """
 
-        network, result = mapped_network
+        network, conversion, result = mapped_network
 
         mapped_assets = (
 

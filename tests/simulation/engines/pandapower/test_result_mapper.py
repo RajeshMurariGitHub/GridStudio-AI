@@ -9,6 +9,7 @@ from uuid import UUID
 import pandapower as pp
 import pytest
 
+from src.domain.network.network import Network
 from src.simulation.engines.pandapower.converter import (
     PandapowerConverter,
 )
@@ -55,6 +56,7 @@ def mapped_network():
         )
     )
 
+
     print("\n=== ext_grid ===")
     print(conversion.network.ext_grid)
 
@@ -98,7 +100,7 @@ class TestPandapowerResultMapper:
 
     def test_map_bus_results(
         self,
-        mapped_network,
+        mapped_network: tuple[Network, PandapowerMappingResult],
     ) -> None:
         """
         Bus results should be mapped into
@@ -121,7 +123,7 @@ class TestPandapowerResultMapper:
 
     def test_map_branch_results(
         self,
-        mapped_network,
+        mapped_network: tuple[Network, PandapowerMappingResult],
     ) -> None:
         """
         Branch results should be mapped into
@@ -146,7 +148,7 @@ class TestPandapowerResultMapper:
 
     def test_map_transformer_results(
         self,
-        mapped_network,
+        mapped_network: tuple[Network, PandapowerMappingResult],
     ) -> None:
         """
         Transformer results should be mapped
@@ -175,7 +177,7 @@ class TestPandapowerResultMapper:
 
     def test_map_load_results(
         self,
-        mapped_network,
+        mapped_network: tuple[Network, PandapowerMappingResult],
     ) -> None:
         """
         Load results should be mapped into
@@ -199,7 +201,7 @@ class TestPandapowerResultMapper:
 
     def test_map_generator_results(
         self,
-        mapped_network,
+        mapped_network: tuple[Network, PandapowerMappingResult],
     ) -> None:
         """
         Generator results should be mapped into
@@ -232,7 +234,7 @@ class TestPandapowerResultMapper:
 
     def test_map_storage_results(
         self,
-        mapped_network,
+        mapped_network: tuple[Network, PandapowerMappingResult],
     ) -> None:
         """
         Storage assets should be mapped into
@@ -287,7 +289,7 @@ class TestPandapowerResultMapper:
 
     def test_map_shunt_results(
         self,
-        mapped_network,
+        mapped_network: tuple[Network, PandapowerMappingResult],
     ) -> None:
         """
         Shunt results should be mapped into
@@ -310,7 +312,7 @@ class TestPandapowerResultMapper:
 
     def test_statistics_are_computed(
         self,
-        mapped_network,
+        mapped_network: tuple[Network, PandapowerMappingResult],
     ) -> None:
         """
         Aggregate statistics should be
@@ -353,7 +355,7 @@ class TestPandapowerResultMapper:
 
     def test_convergence_is_mapped(
         self,
-        mapped_network,
+        mapped_network: tuple[Network, PandapowerMappingResult],
     ) -> None:
         """
         Convergence information should be
@@ -370,11 +372,17 @@ class TestPandapowerResultMapper:
 
         assert convergence.iterations is not None
 
-        assert convergence.iterations >= 0
+        assert convergence.iterations >= 1
+
+        assert convergence.tolerance is not None
+
+        assert convergence.tolerance == pytest.approx(
+            1e-8,
+        )
 
     def test_map_returns_mapping_result(
         self,
-        mapped_network,
+        mapped_network: tuple[Network, PandapowerMappingResult],
     ) -> None:
         """
         The public map() API should return a
@@ -394,7 +402,7 @@ class TestPandapowerResultMapper:
 
     def test_map_complete_network(
         self,
-        mapped_network,
+        mapped_network: tuple[Network, PandapowerMappingResult],
     ) -> None:
         """
         Mapping a solved network should produce
@@ -476,7 +484,7 @@ class TestPandapowerResultMapper:
 
     def test_all_state_keys_are_valid_uuids(
         self,
-        mapped_network,
+        mapped_network: tuple[Network, PandapowerMappingResult],
     ) -> None:
         """
         Every mapped state dictionary should
@@ -520,7 +528,7 @@ class TestPandapowerResultMapper:
 
     def test_every_mapping_is_consumed(
         self,
-        mapped_network,
+        mapped_network: tuple[Network, PandapowerMappingResult],
     ) -> None:
         """
         Every element registered during

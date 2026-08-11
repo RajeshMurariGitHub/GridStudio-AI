@@ -1198,16 +1198,27 @@ class PandapowerResultMapper:
     # ------------------------------------------------------------------
     #
 
-    def _build_convergence(
+    def _map_convergence(
         self,
     ) -> ConvergenceInfo:
         """
-        Build convergence information for the completed power flow.
+        Map Pandapower convergence information.
+
+        Pandapower stores the solver iteration count in the
+        internal power-flow case and the configured convergence
+        tolerance in the solver options.
         """
+
         return ConvergenceInfo(
-            converged=bool(self._pp_net.converged),
-            iterations=0,
-            tolerance=None,
+            converged=bool(
+                self._pp_net.converged,
+            ),
+            iterations=int(
+                self._pp_net._ppc["iterations"],
+            ),
+            tolerance=float(
+                self._pp_net._options["tolerance_mva"],
+            ),
             message=None,
         )
 
@@ -1554,7 +1565,7 @@ class PandapowerResultMapper:
         # Diagnostics
         #
 
-        convergence = self._build_convergence()
+        convergence = self._map_convergence()
         statistics = self._build_statistics()
 
         #

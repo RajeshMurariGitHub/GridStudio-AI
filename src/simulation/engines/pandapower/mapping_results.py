@@ -26,7 +26,6 @@ from typing import Mapping
 from uuid import UUID
 
 from pydantic import ConfigDict
-from pydantic import Field
 
 from src.core.models import BaseModel
 
@@ -40,6 +39,8 @@ from src.simulation.states.generator_state import GeneratorState
 from src.simulation.states.battery_state import BatteryState
 from src.simulation.states.ev_state import EVState
 from src.simulation.states.shunt_state import ShuntState
+from src.simulation.states.solar_state import SolarState
+from src.simulation.states.wind_state import WindState
 
 
 class PandapowerMappingResult(BaseModel):
@@ -102,13 +103,9 @@ class PandapowerMappingResult(BaseModel):
         ShuntState,
     ]
 
-    solar_states: dict = Field(
-        default_factory=dict,
-    )
+    solar_states: dict[UUID, SolarState]
 
-    wind_states: dict = Field(
-        default_factory=dict,
-    )
+    wind_states: dict[UUID, WindState]
 
 
 __all__ = [

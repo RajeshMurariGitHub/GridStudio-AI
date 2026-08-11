@@ -11,6 +11,10 @@ from src.simulation.engines.pandapower.engine import (
     PandapowerEngine,
 )
 
+from src.simulation.manager import (
+    SimulationManager,
+)
+
 from src.simulation.models.results.power_flow_result import (
     PowerFlowResult,
 )
@@ -61,6 +65,39 @@ class TestPandapowerPowerFlowPipeline:
         assert result.successful
 
         assert result.convergence.converged
+
+    def test_complete_power_flow_through_manager(
+        self,
+        engine,
+    ) -> None:
+        """
+        Execute an end-to-end power-flow study
+        through the SimulationManager.
+        """
+
+        network = build_engine_network()
+
+        request = build_power_flow_request(
+            network,
+        )
+
+        manager = SimulationManager(
+            engine,
+        )
+
+        result = manager.run_power_flow(
+            request,
+        )
+
+        assert isinstance(
+            result,
+            PowerFlowResult,
+        )
+
+        assert result.successful
+
+        assert result.convergence.converged
+
 
     def test_result_metadata(
         self,

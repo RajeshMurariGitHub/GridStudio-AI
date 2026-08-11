@@ -167,7 +167,7 @@ class PandapowerEngine(
 
             simulation_modes=frozenset({
 
-                SimulationMode.STEADY_STATE,
+                SimulationMode.SNAPSHOT,
 
             }),
         )

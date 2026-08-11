@@ -29,6 +29,8 @@ from .builders import (
     build_engine_network,
 )
 
+from src.core.enums.simulation import SimulationMode
+from src.core.enums.simulation import StudyType
 
 from src.simulation.models.convergence import (
     ConvergenceInfo,
@@ -46,6 +48,49 @@ class TestPandapowerEngine:
     """
     Unit tests for PandapowerEngine.
     """
+    # ENGINE IDENTITY
+    def test_name(
+        self,
+        engine,
+    ) -> None:
+        assert engine.name == "pandapower"
+
+    # SUPPORTED CAPABILITIES
+    def test_capabilities(
+        self,
+        engine,
+    ) -> None:
+        assert engine.supports_study(
+            StudyType.POWER_FLOW,
+        )
+
+        assert engine.supports_mode(
+            SimulationMode.SNAPSHOT,
+        )
+
+        assert engine.supports(
+            StudyType.POWER_FLOW,
+            SimulationMode.SNAPSHOT,
+        )
+
+    # UNSUPPORTED CAPABILITIES
+    def test_unsupported_capabilities(
+        self,
+        engine,
+    ) -> None:
+        assert not engine.supports_study(
+            StudyType.SHORT_CIRCUIT,
+        )
+
+        assert not engine.supports_mode(
+            SimulationMode.TIME_SERIES,
+        )
+
+        assert not engine.supports(
+            StudyType.POWER_FLOW,
+            SimulationMode.TIME_SERIES,
+        )
+
 
     def test_invalid_request(
         self,

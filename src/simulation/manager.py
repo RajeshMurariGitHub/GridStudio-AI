@@ -4,11 +4,17 @@ Simulation orchestration for GridStudio AI.
 
 from __future__ import annotations
 
-from typing import Any
-
 from src.core.enums.simulation import SimulationMode
 from src.core.enums.simulation import StudyType
 from src.simulation.engines.base.engine import SimulationEngine
+
+from src.simulation.models.requests.power_flow_request import (
+    PowerFlowRequest,
+)
+
+from src.simulation.models.results.power_flow_result import (
+    PowerFlowResult,
+)
 
 
 class SimulationManager:
@@ -27,8 +33,8 @@ class SimulationManager:
 
     def run_power_flow(
         self,
-        request: Any,
-    ) -> Any:
+        request: PowerFlowRequest,
+    ) -> PowerFlowResult:
         """
         Run a snapshot power-flow study through the configured engine.
 

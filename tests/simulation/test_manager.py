@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, get_type_hints
 
 import pytest
 
@@ -8,6 +8,12 @@ from src.simulation.engines.base.capabilities import EngineCapabilities
 from src.simulation.engines.base.engine import SimulationEngine
 from src.simulation.manager import SimulationManager
 
+from src.simulation.models.requests.power_flow_request import (
+    PowerFlowRequest,
+)
+from src.simulation.models.results.power_flow_result import (
+    PowerFlowResult,
+)
 
 class DummyEngine(SimulationEngine):
     def __init__(
@@ -93,3 +99,18 @@ def test_run_power_flow_rejects_unsupported_engine() -> None:
         manager.run_power_flow(object())
 
     assert engine.received_request is None
+
+def test_run_power_flow_has_concrete_contract() -> None:
+    hints = get_type_hints(
+        SimulationManager.run_power_flow,
+    )
+
+    assert (
+        hints["request"]
+        is PowerFlowRequest
+    )
+
+    assert (
+        hints["return"]
+        is PowerFlowResult
+    )

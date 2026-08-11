@@ -45,7 +45,7 @@ class SimulationManager:
 
         Returns
         -------
-        Any
+        PowerFlowResult
             Result returned by the configured simulation engine.
 
         Raises

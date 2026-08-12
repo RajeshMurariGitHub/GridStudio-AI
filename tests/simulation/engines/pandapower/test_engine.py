@@ -409,6 +409,24 @@ class TestPandapowerEngine:
 
         assert result.base_power_mva == network.base_power_mva
 
+        assert result.simulation_id == UUID(int=1)
+
+        assert result.started_at <= result.completed_at
+
+        assert result.execution_time_seconds == 0.01
+
+        assert result.solver_name == engine.name
+
+        assert result.simulation_name == "Pandapower Power Flow"
+
+        assert result.successful
+
+        assert not result.errors
+
+        assert not result.warnings
+
+        assert result.solver_version
+
     def test_solver_failure_propagates(
         self,
         engine,

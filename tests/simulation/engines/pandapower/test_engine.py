@@ -399,6 +399,10 @@ class TestPandapowerEngine:
 
         assert result.successful
 
+        assert result.slack_bus_id == (
+            request.reference_sources[0].bus_id
+        )
+
         assert result.total_active_generation_mw == 10.0
 
         assert result.total_active_loss_mw == 0.5

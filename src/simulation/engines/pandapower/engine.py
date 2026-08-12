@@ -356,6 +356,12 @@ class PandapowerEngine(
 
         statistics = mapping_result.statistics
 
+        slack_bus_id = (
+            request.reference_sources[0].bus_id
+            if request.reference_sources
+            else None
+        )
+
         return PowerFlowResult(
 
             #
@@ -365,6 +371,8 @@ class PandapowerEngine(
             #
 
             simulation_id=simulation_id,
+
+            slack_bus_id=slack_bus_id,
 
             simulation_name=(
                 "Pandapower Power Flow"

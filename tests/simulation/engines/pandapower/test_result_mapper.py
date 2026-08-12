@@ -630,3 +630,56 @@ class TestPandapowerResultMapper:
             for asset_id, state in collection.items():
                 assert state.asset_id == asset_id
 
+    def test_mapped_state_ids_match_network_asset_ids(
+        self,
+        mapped_network: tuple[
+            Network,
+            PandapowerConversion,
+            PandapowerMappingResult,
+        ],
+    ) -> None:
+        """
+        Every supported network asset must have exactly one
+        mapped state with the same GridStudio UUID.
+        """
+
+        network, _, result = mapped_network
+
+        assert set(result.bus_states) == {
+            bus.id for bus in network.buses
+        }
+
+        assert set(result.branch_states) == {
+            line.id for line in network.lines
+        }
+
+        assert set(result.transformer_states) == {
+            transformer.id
+            for transformer in network.transformers
+        }
+
+        assert set(result.load_states) == {
+            load.id for load in network.loads
+        }
+
+        assert (
+            set(result.generator_states)
+            | set(result.solar_states)
+            | set(result.wind_states)
+        ) == {
+            generator.id
+            for generator in network.generators
+        }
+
+        assert set(result.battery_states) == {
+            battery.id for battery in network.batteries
+        }
+
+        assert set(result.ev_states) == {
+            ev.id for ev in network.evs
+        }
+
+        assert set(result.shunt_states) == {
+            shunt.id for shunt in network.shunts
+        }
+

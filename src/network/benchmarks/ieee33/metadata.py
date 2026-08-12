@@ -25,6 +25,9 @@ from src.network.benchmarks.common.types import (
     BenchmarkMetadata,
 )
 
+from src.network.benchmarks.common.constants import (
+    DEFAULT_BASE_POWER_MVA,
+)
 
 IEEE33_METADATA = BenchmarkMetadata(
     name="IEEE 33-Bus Distribution Test Feeder",
@@ -42,7 +45,7 @@ IEEE33_METADATA = BenchmarkMetadata(
 
     version="Baran-Wu Original",
 
-    base_power_mva=1.0,
+    base_power_mva=DEFAULT_BASE_POWER_MVA,
 
     base_voltage_kv=12.66,
 

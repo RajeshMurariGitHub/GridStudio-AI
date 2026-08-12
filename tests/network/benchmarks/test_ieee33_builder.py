@@ -58,6 +58,15 @@ class TestIEEE33Builder:
     Tests for IEEE33Builder.
     """
 
+    def test_base_power_propagated(
+        self,
+        network,
+    ) -> None:
+        """
+        Network base power is propagated from benchmark metadata.
+        """
+        assert network.base_power_mva == IEEE33_METADATA.base_power_mva
+
     def test_build_returns_network(
         self,
         network,

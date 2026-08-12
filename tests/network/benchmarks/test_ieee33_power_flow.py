@@ -42,6 +42,8 @@ from src.network.benchmarks.ieee33.expected_results import (
     IEEE33ExpectedResults,
 )
 
+from src.simulation.manager import SimulationManager
+
 from src.network.benchmarks.ieee33 import IEEE33_DATASET
 
 ABS_TOL = 1e-5
@@ -56,12 +58,9 @@ BENCHMARK_BRANCH_LOSS_TOL = 1e-4
 
 
 @pytest.fixture(scope="module")
-def engine():
-    """
-    Create the pandapower engine.
-    """
-
-    return PandapowerEngine()
+def simulation_manager():
+    engine = PandapowerEngine()
+    return SimulationManager(engine)
 
 @pytest.fixture(scope="module")
 def power_flow_request(
@@ -77,14 +76,15 @@ def power_flow_request(
 
 @pytest.fixture(scope="module")
 def power_flow_result(
-    engine,
+    simulation_manager,
     power_flow_request,
 ):
     """
-    Execute the power-flow simulation.
+    Execute the power-flow simulation through
+    the SimulationManager.
     """
 
-    return engine.run(
+    return simulation_manager.run_power_flow(
         power_flow_request,
     )
 
@@ -261,6 +261,36 @@ class TestIEEE33PowerFlow:
             power_flow_result.network_name
             ==
             network.name
+        )
+
+    def test_base_power_preserved(
+        self,
+        network,
+        power_flow_result,
+    ):
+        """
+        Result preserves the network base power.
+        """
+
+        assert (
+            power_flow_result.base_power_mva
+            ==
+            network.base_power_mva
+        )
+
+    def test_base_frequency_preserved(
+        self,
+        network,
+        power_flow_result,
+    ):
+        """
+        Result preserves the network base frequency.
+        """
+
+        assert (
+            power_flow_result.base_frequency_hz
+            ==
+            network.base_frequency_hz
         )
 
     def test_no_solver_errors(

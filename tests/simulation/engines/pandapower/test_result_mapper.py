@@ -88,7 +88,10 @@ class TestPandapowerResultMapper:
 
     def test_map_bus_results(
         self,
-        mapped_network: tuple[Network, PandapowerMappingResult],
+        mapped_network: tuple[
+            Network,
+            PandapowerConversion,
+            PandapowerMappingResult],
     ) -> None:
         """
         Bus results should be mapped into

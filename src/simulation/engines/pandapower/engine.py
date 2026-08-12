@@ -416,7 +416,7 @@ class PandapowerEngine(
             # Read these from the GridStudio
             # Network model once available.
             #
-            base_power_mva=None,
+            base_power_mva=request.network.base_power_mva,
 
             base_frequency_hz=request.network.base_frequency_hz,
 

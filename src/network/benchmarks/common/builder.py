@@ -205,6 +205,7 @@ class BenchmarkBuilder:
         network = Network(
             name=self._metadata.name,
             description=self._metadata.description,
+            base_power_mva=self._metadata.base_power_mva,
             base_frequency_hz=self._metadata.base_frequency_hz,
         )
 

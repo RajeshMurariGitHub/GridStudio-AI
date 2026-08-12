@@ -32,6 +32,8 @@ from src.network.benchmarks.ieee33.builder import (
 from src.network.benchmarks.ieee33.data import (
     IEEE33_DATASET,
 )
+from src.network.benchmarks.ieee33.metadata import IEEE33_METADATA
+
 
 @pytest.fixture(scope="module")
 def builder() -> IEEE33Builder:
@@ -212,4 +214,12 @@ class TestIEEE33Builder:
 
         assert len(network1.generators) == len(network2.generators)
 
-        
+
+    def test_metadata_propagated_to_network(
+        self,
+        network,
+    ) -> None:
+        assert network.base_power_mva == IEEE33_METADATA.base_power_mva
+        assert network.base_frequency_hz == (
+            IEEE33_METADATA.base_frequency_hz
+        )

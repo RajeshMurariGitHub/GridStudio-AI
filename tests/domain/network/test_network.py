@@ -214,26 +214,26 @@ def test_remove_missing_element_raises() -> None:
 # Typed Views
 # ============================================================================
 
-    def test_buses_view_contains_only_buses() -> None:
-        network = Network(
-            name="Test Network"
-        )
+def test_buses_view_contains_only_buses() -> None:
+    network = Network(
+        name="Test Network"
+   )
 
-        bus_1 = make_bus("Bus 1")
-        bus_2 = make_bus("Bus 2")
+    bus_1 = make_bus("Bus 1")
+    bus_2 = make_bus("Bus 2")
 
-        network.add(bus_1)
-        network.add(bus_2)
+    network.add(bus_1)
+    network.add(bus_2)
 
-        buses = network.buses
+    buses = network.buses
 
-        assert len(buses) == 2
-        assert bus_1 in buses
-        assert bus_2 in buses
-        assert all(
-            isinstance(bus, Bus)
-            for bus in buses
-        )
+    assert len(buses) == 2
+    assert bus_1 in buses
+    assert bus_2 in buses
+    assert all(
+        isinstance(bus, Bus)
+        for bus in buses
+   )
 
 def test_bus_ids() -> None:
     network = Network(
@@ -250,3 +250,10 @@ def test_bus_ids() -> None:
         bus_1.id,
         bus_2.id,
     }
+
+def test_network_base_power_mva() -> None:
+    network = Network(
+        name="Test Network",
+    )
+
+    assert network.base_power_mva == 100.0

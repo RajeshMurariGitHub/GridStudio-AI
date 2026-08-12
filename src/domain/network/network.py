@@ -130,6 +130,12 @@ class Network(DomainModel):
         description="Optional network description.",
     )
 
+    base_power_mva: float = Field(
+        default=100.0,
+        gt=0.0,
+        description="Nominal network base power in MVA.",
+    )
+
     base_frequency_hz: float = Field(
         default=50.0,
         gt=0.0,

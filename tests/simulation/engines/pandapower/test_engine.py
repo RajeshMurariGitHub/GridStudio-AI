@@ -403,6 +403,8 @@ class TestPandapowerEngine:
 
         assert result.total_active_loss_mw == 0.5
 
+        assert result.base_power_mva == network.base_power_mva
+
     def test_solver_failure_propagates(
         self,
         engine,

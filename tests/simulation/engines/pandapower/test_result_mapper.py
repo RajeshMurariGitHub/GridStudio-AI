@@ -598,5 +598,35 @@ class TestPandapowerResultMapper:
 
         assert mapped_assets == expected_assets
 
+    def test_state_keys_match_state_asset_ids(
+        self,
+        mapped_network: tuple[
+            Network,
+            PandapowerConversion,
+            PandapowerMappingResult,
+        ],
+    ) -> None:
+        """
+        Every mapped state dictionary key must match
+        the asset_id stored in the corresponding state.
+        """
 
+        _, _, result = mapped_network
+
+        state_collections = (
+            result.bus_states,
+            result.branch_states,
+            result.transformer_states,
+            result.load_states,
+            result.generator_states,
+            result.solar_states,
+            result.wind_states,
+            result.battery_states,
+            result.ev_states,
+            result.shunt_states,
+        )
+
+        for collection in state_collections:
+            for asset_id, state in collection.items():
+                assert state.asset_id == asset_id
 
